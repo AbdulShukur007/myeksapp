@@ -1,0 +1,16 @@
+---
+- hosts: all
+  become: yes
+  vars:
+       ArtifactVersion : 0.1.1
+  tasks:
+   - name: Download a WAR File to the Tomcat webapps directory to be deployed
+     maven_artifact:
+       group_id: com.devops4solutions
+       artifact_id: LoginWebApp
+       extension: war
+       repository_url: 'http://3.95.33.150:8081/repository/maven-releases/'
+       version: "{{ ArtifactVersion }}"
+       username: admin
+       password: admin
+       dest: /opt/apache-tomcat-9.0.65/webapps/
