@@ -5,13 +5,10 @@ pipeline {
     }
     agent any
     environment {     
-            imagename = "abdulsukku/my-app"
-            registryCredential = "docker"
-            dockerImage = ''
             NEXUS_VERSION = "nexus3"
             NEXUS_PROTOCOL = "http"
-            NEXUS_URL = "172.31.30.165:8081"
-            NEXUS_REPOSITORY = "my-maven-release"
+            NEXUS_URL = ""172.31.85.199:8081""
+            NEXUS_REPOSITORY = "maven-releases"
             NEXUS_CREDENTIAL_ID = "nexus"
     } 
     stages {
@@ -22,7 +19,7 @@ pipeline {
         }  
         stage('Maven Build'){
             steps {
-                sh 'mvn clean install'           
+                sh 'mvn clean deploy'           
             }
         }
         stage('Push to Nexus'){
@@ -60,45 +57,6 @@ pipeline {
                }  
            }  
         }
-        stage('SonarQube analysis'){
-              steps{
-                     script{
-                         withSonarQubeEnv('sonarserver') { 
-                         sh "mvn sonar:sonar"
-                              }
-                         timeout(time: 2, unit: 'MINUTES') {
-                              waitForQualityGate abortPipeline: true
-                              }
-                         
-                      }
-               }
-        }
-        stage("Docker build"){
-            steps{
-                script {
-                    dockerImage = docker.build imagename
-                }
-            }
-        }
-        stage("Push Image to Docker Hub"){
-            steps{
-                script {
-                    docker.withRegistry( '', registryCredential ) {
-                    dockerImage.push("$BUILD_NUMBER")
-                    dockerImage.push('latest')
-                    }
-                }
-            }
-        }
-        stage("kubernetes deployment"){
-            steps{
-                script {
-                        withKubeConfig(caCertificate: '', clusterName: '', contextName: '', namespace: '', credentialsId: 'K8', serverUrl: '') {
-                        sh ('kubectl apply -f eks-deployment.yaml')
-                    }
-                } 
-            }
-        }
-     
+      
     }
  }
