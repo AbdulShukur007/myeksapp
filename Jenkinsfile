@@ -7,7 +7,7 @@ pipeline {
     environment {     
             NEXUS_VERSION = "nexus3"
             NEXUS_PROTOCOL = "http"
-            NEXUS_URL = ""172.31.85.199:8081""
+            NEXUS_URL = "172.31.85.199:8081"
             NEXUS_REPOSITORY = "maven-releases"
             NEXUS_CREDENTIAL_ID = "nexus"
     } 
@@ -57,6 +57,11 @@ pipeline {
                }  
            }  
         }
-      
+      stage('Ansible Deploy'){
+          steps {    
+                   
+                    sh 'sudo ansible-playbook -i myhosts ansible.yml'
+          } 
+       }
     }
  }
